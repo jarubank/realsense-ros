@@ -1,0 +1,56 @@
+
+
+
+
+###############################################################
+##########   STEP 1 Intel® RealSense™ SDK 2.0    ##############
+###############################################################
+## Register the server's public key:
+sudo apt-key adv --keyserver keys.gnupg.net --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
+
+
+## Add the server to the list of repositories: Ubuntu 18 LTS
+sudo add-apt-repository "deb http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo bionic main" -u
+
+
+
+## Install the libraries (see section below if upgrading packages):
+sudo apt-get install librealsense2-dkms -y
+sudo apt-get install librealsense2-utils -y
+sudo apt-get install librealsense2-dev -y
+sudo apt-get install librealsense2-dbg -y
+
+
+
+## Upgrading the Packages
+sudo apt-get update
+sudo apt-get --only-upgrade install librealsense2-utils librealsense2-dkms
+
+
+## Uninstalling the Packages
+dpkg -l | grep "realsense" | cut -d " " -f 3 | xargs sudo dpkg --purge
+
+
+
+################################################################################
+##########   STEP 2  Install Intel® RealSense™ ROS from Sources   ##############
+################################################################################
+sudo apt-get install ros-melodic-ddynamic-reconfigure
+mkdir -p ~/catkin_ws/src
+cd ~/catkin_ws/src/
+git clone https://github.com/jarubank/realsense-ros.git
+cd realsense-ros/
+git checkout `git tag | sort -V | grep -P "^\d+\.\d+\.\d+" | tail -1`
+cd ..
+catkin_init_workspace
+cd ..
+catkin_make clean
+catkin_make -DCATKIN_ENABLE_TESTING=False -DCMAKE_BUILD_TYPE=Release
+catkin_make install
+catkin_make
+echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+
+
+
+
